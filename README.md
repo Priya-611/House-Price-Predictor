@@ -86,7 +86,7 @@ house-price-predictor/
 
 └── templates/
 
-└── index.html `Web frontend form`
+  └── index.html `Web frontend form`
 
 
 ---
@@ -124,7 +124,7 @@ Step 3: Run Flask App (app.py)
   
   ├── Serve HTML form via /
   
-  └── Expose API endpoint via /api/predict
+    └── Expose API endpoint via /api/predict
   
 
 Step 4: User Interaction
