@@ -85,6 +85,7 @@ house-price-predictor/
 ├── requirements.txt `Python dependencies`
 
 └── templates/
+
 └── index.html `Web frontend form`
 
 
@@ -94,30 +95,51 @@ house-price-predictor/
 ## Project Workflow
 
 Step 1: Load Dataset
+
   └── Housing.csv
+  
 
 Step 2: Train Model (house.py)
+
   ├── Encode categorical features (LabelEncoder)
+  
   ├── Train RandomForestRegressor
+  
   └── Save:
+  
       ├── house_price_model.pkl
+      
       ├── main_road.pkl
+      
       ├── guest_room.pkl
+      
       ├── basement.pkl
+      
       └── air_conditioning.pkl
+      
 
 Step 3: Run Flask App (app.py)
+
   ├── Load model and encoders
+  
   ├── Serve HTML form via /
+  
   └── Expose API endpoint via /api/predict
+  
 
 Step 4: User Interaction
+
   ├── User inputs form OR sends JSON
+  
   └── Flask processes → model predicts → returns predicted price
+  
 
 Step 5: Output
+
   ├── HTML view displays price
+  
   └── OR API responds with JSON { "prediction": value }
+  
 
 
 ---
