@@ -66,6 +66,7 @@ The model and encoders are serialized using Pickle and loaded by the Flask app f
 ##  Project Structure
 
 house-price-predictor/
+
 ├── app.py `Flask app (web + API)`
 
 ├── house.py `ML training script`
@@ -124,7 +125,7 @@ Step 3: Run Flask App (app.py)
   
   ├── Serve HTML form via /
   
-    └── Expose API endpoint via /api/predict
+  └── Expose API endpoint via /api/predict
   
 
 Step 4: User Interaction
