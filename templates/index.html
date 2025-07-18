@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Price Predictor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        :root {
+            --bg-main: #181c24;
+            --bg-card: #232a36;
+            --accent: #0d47a1; /* darker blue */
+            --accent-light: #1976d2; /* blue */
+            --accent-dark: #102542; /* even deeper blue */
+            --text-main: #f5f7fa;
+            --text-muted: #b0b8c1;
+            --error: #ff5252;
+            --success: #00e676;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--bg-main);
+            margin: 0;
+            padding: 0;
+            color: var(--text-main);
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header, .container, .about-section, .footer {
+            position: relative;
+            z-index: 2;
+        }
+        .header {
+            background: linear-gradient(90deg, var(--accent-dark) 0%, var(--accent) 100%);
+            color: #fff;
+            padding: 0;
+            box-shadow: 0 2px 12px rgba(25, 118, 210, 0.10);
+            border-bottom: 2.5px solid var(--accent-light);
+            position: relative;
+        }
+        .header-flex {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: 90px;
+            padding: 0 2vw;
+        }
+        .header-left {
+            flex: 1 0 0;
+        }
+        .header-center {
+            flex: 2 1 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 18px 0 18px 0;
+        }
+        .header-center h1 {
+            margin: 0 0 6px 0;
+            font-size: 2.5em;
+            letter-spacing: 1.5px;
+            font-weight: 800;
+            color: #fff;
+            text-align: center;
+            line-height: 1.1;
+        }
+        .header-center .header-subtitle {
+            margin: 0;
+            font-size: 1em;
+            font-weight: 400;
+            color: var(--accent-light);
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+        .header-right {
+            flex: 1 0 0;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-end;
+            min-width: 220px;
+            gap: 0;
+            margin-left: auto;
+            z-index: 3;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .header-right .header-nav {
+            margin-top: 0;
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+            flex-wrap: nowrap;
+        }
+        .header-right .header-nav-link {
+            margin-bottom: 0;
+        }
+        .header-icon {
+            font-size: 2.1em;
+            color: #fff;
+            opacity: 0.85;
+            background: rgba(255,152,0,0.10);
+            border-radius: 50%;
+            padding: 12px 16px;
+            box-shadow: 0 2px 8px #ff980022;
+            transition: background 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .header-icon:hover {
+            background: rgba(255,152,0,0.22);
+            box-shadow: 0 4px 16px #ff980033;
+        }
+        .header-social {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 10px;
+        }
+        .header-social a {
+            color: #fff;
+            opacity: 0.7;
+            font-size: 1.45em;
+            margin: 0 2px;
+            transition: color 0.2s, opacity 0.2s;
+            text-decoration: none;
+        }
+        .header-social a:hover {
+            color: var(--accent-light);
+            opacity: 1;
+        }
+        .header-nav {
+            display: flex;
+            justify-content: flex-end;
+            gap: 32px;
+            margin-top: 0;
+        }
+        .header-nav-link {
+            color: var(--accent-light);
+            font-size: 0.85em;
+            font-weight: 500;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 7px;
+            transition: background 0.18s, color 0.18s;
+            letter-spacing: 0.5px;
+        }
+        .header-nav-link:hover, .header-nav-link:focus {
+            background: var(--accent-dark);
+            color: #fff;
+        }
+        .container {
+            width: 100vw;
+            max-width: 1100px;
+            min-height: 80vh;
+            margin: 44px auto 32px auto;
+            background: var(--bg-card);
+            padding: 36px 3vw 32px 3vw;
+            border-radius: 18px;
+            box-shadow: 0 4px 32px rgba(255,152,0,0.10);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1 0 auto;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 26px;
+            color: var(--accent-light);
+            font-weight: 600;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px 28px;
+            width: 100%;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        label {
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: var(--accent-light);
+        }
+        input, select {
+            padding: 11px;
+            border-radius: 6px;
+            border: 1.5px solid #2e3a4d;
+            font-size: 1em;
+            background: #1a202b;
+            color: var(--text-main);
+            transition: border 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+        input:focus, select:focus, .form-group.active input, .form-group.active select {
+            border: 1.5px solid var(--accent);
+            outline: none;
+            box-shadow: 0 0 6px var(--accent-light)33;
+            background: #232a36;
+        }
+        .tooltip {
+            visibility: hidden;
+            background: #232a36;
+            color: var(--text-main);
+            text-align: left;
+            border-radius: 4px;
+            padding: 6px 12px;
+            position: absolute;
+            z-index: 1;
+            left: 105%;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.97em;
+            opacity: 0;
+            transition: opacity 0.2s;
+            width: 190px;
+            box-shadow: 0 2px 8px #0002;
+        }
+        .form-group:hover .tooltip, .form-group:focus-within .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        button {
+            margin-top: 22px;
+            padding: 13px;
+            background: linear-gradient(90deg, var(--accent-light) 0%, var(--accent) 100%);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.13em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(255,152,0,0.10);
+            width: 100%;
+            position: relative;
+            letter-spacing: 1px;
+        }
+        button:disabled {
+            background: #2e3a4d;
+            color: #b0b8c1;
+            cursor: not-allowed;
+        }
+        .spinner {
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            border: 3px solid #fff;
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        .result-card {
+            margin-top: 36px;
+            background: #1a202b;
+            border: 2px solid var(--accent-light);
+            border-radius: 12px;
+            box-shadow: 0 4px 24px #ff980022;
+            padding: 30px 2vw 22px 2vw;
+            text-align: center;
+            animation: fadeInCard 0.8s cubic-bezier(.23,1.01,.32,1);
+            width: 100%;
+            max-width: 1100px;
+            transition: box-shadow 0.3s, transform 0.3s, opacity 0.3s;
+            opacity: 0;
+            transform: translateY(30px) scale(0.98);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-top: 18px;
+            padding-bottom: 18px;
+        }
+        .result-card h3 {
+            color: var(--accent-light);
+            margin-bottom: 12px;
+            font-size: 1.35em;
+            font-weight: 600;
+        }
+        .predicted-price {
+            font-size: 2.7em;
+            font-weight: bold;
+            color: var(--success);
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px #00e67622;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .predicted-price:before {
+            content: '\1F4B0'; /* Money bag emoji */
+            font-size: 1.1em;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        .summary-sentence {
+            background: linear-gradient(90deg, var(--accent-dark) 0%, var(--accent-light) 100%);
+            color: #fff !important;
+            border-radius: 10px;
+            padding: 18px 24px;
+            margin: 18px 0 0 0;
+            font-size: 1.18em;
+            font-weight: 500;
+            line-height: 1.7;
+            box-shadow: 0 2px 12px #1976d244;
+            text-align: center;
+            display: inline-block;
+        }
+        .criteria-table {
+            margin: 22px auto 0 auto;
+            border-collapse: collapse;
+            width: 100%;
+            background: #232a36;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 8px #ff980011;
+        }
+        .criteria-table th, .criteria-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #232a36;
+            text-align: left;
+            color: var(--text-main);
+        }
+        .criteria-table th {
+            background: #1a202b;
+            color: var(--accent-light);
+            font-weight: 600;
+        }
+        .criteria-table tr:last-child td {
+            border-bottom: none;
+        }
+        .criteria-table td {
+            color: var(--text-muted);
+        }
+        .about-section {
+            margin: 38px 0 0 0;
+            background: #232a36;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px #ff980011;
+            padding: 28px 2vw 18px 2vw;
+            width: 100%;
+            max-width: 1100px;
+            text-align: center;
+        }
+        .about-section h3 {
+            color: var(--accent-light);
+            margin-bottom: 10px;
+            font-size: 1.25em;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        .about-section p {
+            color: var(--text-muted);
+            font-size: 1.05em;
+            margin: 0;
+        }
+        .footer {
+            background: #181c24;
+            color: #b0b8c1;
+            text-align: center;
+            padding: 18px 0 12px 0;
+            font-size: 1em;
+            letter-spacing: 1px;
+            border-top: 1px solid #232a36;
+            flex-shrink: 0;
+            /* Footer is now a normal block element, not fixed */
+        }
+        .footer-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
+        .footer-social {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .footer-social a {
+            color: #fff;
+            opacity: 0.7;
+            font-size: 1.45em;
+            margin: 0 2px;
+            transition: color 0.2s, opacity 0.2s;
+            text-decoration: none;
+        }
+        .footer-social a:hover {
+            color: var(--accent-light);
+            opacity: 1;
+        }
+        @media (max-width: 1200px) {
+            .container, .result-card, .about-section, .footer-content { max-width: 98vw; }
+        }
+        @media (max-width: 700px) {
+            .container { padding: 10px 0 10px 0; min-height: unset; }
+            .header h1 { font-size: 1.5em; }
+            .form-grid { grid-template-columns: 1fr; }
+            .result-card { padding: 10px 0 10px 0; }
+            .header-flex { flex-direction: column; gap: 10px; }
+            .footer-content { flex-direction: column; align-items: center; gap: 8px; }
+            .about-section { padding: 10px 0 10px 0; }
+        }
+        @keyframes fadeInCard {
+            from { opacity: 0; transform: scale(0.95) translateY(40px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .input-feedback {
+            font-size: 0.95em;
+            color: var(--error);
+            margin-top: 2px;
+            min-height: 18px;
+            display: block;
+            transition: color 0.2s;
+        }
+        .input-feedback.valid {
+            color: var(--success);
+        }
+        .progress-bar {
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent-light) 0%, var(--accent) 100%);
+            border-radius: 4px;
+            margin-top: 18px;
+            overflow: hidden;
+            position: relative;
+            animation: progressBarAnim 1.2s linear infinite;
+        }
+        @keyframes progressBarAnim {
+            0% { background-position: 0% 0; }
+            100% { background-position: 100% 0; }
+        }
+        .result-card {
+            transition: box-shadow 0.3s, transform 0.3s, opacity 0.3s;
+            opacity: 0;
+            transform: translateY(30px) scale(0.98);
+        }
+        .result-card.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            animation: fadeInCard 0.7s cubic-bezier(.23,1.01,.32,1);
+        }
+        @media (max-width: 900px) {
+            .header-flex {
+                flex-direction: column;
+                align-items: stretch;
+                min-height: unset;
+                padding: 0 1vw;
+            }
+            .header-center {
+                align-items: center;
+                padding: 12px 0 10px 0;
+            }
+            .header-right {
+                min-width: unset;
+                justify-content: flex-end;
+                margin-top: 8px;
+            }
+            .header-nav {
+                gap: 18px;
+            }
+        }
+        @media (max-width: 600px) {
+            .header-center h1 {
+                font-size: 1.3em;
+            }
+            .header-center p {
+                font-size: 0.98em;
+            }
+            .header-nav-link {
+                font-size: 0.98em;
+                padding: 5px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-flex">
+            <div class="header-left">
+                <a href="/" class="header-icon" title="Home">
+                    <i class="fas fa-home"></i>
+                </a>
+            </div>
+            <div class="header-center">
+                <h1>🏠 House Price Predictor</h1>
+                <div class="header-subtitle">Get an instant estimate of your house value using AI</div>
+            </div>
+            <div class="header-right">
+                <nav class="header-nav">
+                    <a href="#how-it-works-section" class="header-nav-link">How It Works</a>
+                    <a href="#about-section" class="header-nav-link">About Us</a>
+                    <a href="#contact-section" class="header-nav-link">Contact</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h2>Enter House Details</h2>
+        <form id="predictForm" autocomplete="off">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="area">Area (sq ft):</label>
+                    <input type="number" step="any" name="area" id="area" required>
+                    <span class="tooltip">Total built-up area of the house in square feet.</span>
+                    <span class="input-feedback" id="areaFeedback"></span>
+                </div>
+                <div class="form-group">
+                    <label for="bedrooms">Bedrooms:</label>
+                    <input type="number" name="bedrooms" id="bedrooms" required>
+                    <span class="tooltip">Number of bedrooms in the house.</span>
+                    <span class="input-feedback" id="bedroomsFeedback"></span>
+                </div>
+                <div class="form-group">
+                    <label for="bathrooms">Bathrooms:</label>
+                    <input type="number" name="bathrooms" id="bathrooms" required>
+                    <span class="tooltip">Number of bathrooms in the house.</span>
+                    <span class="input-feedback" id="bathroomsFeedback"></span>
+                </div>
+                <div class="form-group">
+                    <label for="stories">Stories:</label>
+                    <input type="number" name="stories" id="stories" required>
+                    <span class="tooltip">Number of floors (stories) in the house.</span>
+                    <span class="input-feedback" id="storiesFeedback"></span>
+                </div>
+                <div class="form-group">
+                    <label for="mainroad">Main Road:</label>
+                    <select name="mainroad" id="mainroad" required>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                    <span class="tooltip">Is the house located on a main road?</span>
+                </div>
+                <div class="form-group">
+                    <label for="guestroom">Guest Room:</label>
+                    <select name="guestroom" id="guestroom" required>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                    <span class="tooltip">Does the house have a guest room?</span>
+                </div>
+                <div class="form-group">
+                    <label for="basement">Basement:</label>
+                    <select name="basement" id="basement" required>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                    <span class="tooltip">Does the house have a basement?</span>
+                </div>
+                <div class="form-group">
+                    <label for="airconditioning">Air Conditioning:</label>
+                    <select name="airconditioning" id="airconditioning" required>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                    <span class="tooltip">Is air conditioning available in the house?</span>
+                </div>
+                <div class="form-group">
+                    <label for="parking">Parking (number of spots):</label>
+                    <input type="number" name="parking" id="parking" required>
+                    <span class="tooltip">Number of parking spots available.</span>
+                    <span class="input-feedback" id="parkingFeedback"></span>
+                </div>
+            </div>
+            <button type="submit" id="predictBtn">
+                <span id="btnText">Predict Price</span>
+                <span class="spinner" id="spinner" style="display:none;"></span>
+            </button>
+            <div class="progress-bar" id="progressBar" style="display:none;"></div>
+        </form>
+        <div class="result-card" id="resultCard" style="display:none;"></div>
+        <div class="about-section" id="how-it-works-section" style="margin-top:24px; background: #1a2233;">
+            <h3 style="color: var(--accent-light); margin-bottom: 10px;">How It Works</h3>
+            <div style="text-align:left; max-width: 700px; margin: 0 auto; color: var(--text-muted); font-size: 1.12em; line-height: 1.8;">
+                <p><b>AI-Powered Prediction:</b> This tool uses Artificial Intelligence and advanced Machine Learning (ML) algorithms to estimate your house price instantly.</p>
+                <ul style="margin-left: 1.2em;">
+                    <li>Enter your house details in the form above.</li>
+                    <li>Your data is processed by a trained ML model that analyzes real-world housing trends and features.</li>
+                    <li>Our AI combines multiple decision trees (Random Forest) to make a smart, data-driven prediction tailored to your input.</li>
+                    <li>Get your result instantly, with a clear summary of your house's key features.</li>
+                </ul>
+                <p style="margin-top:10px; color:var(--accent-light);"><b>Experience the power of AI and ML for smarter, faster house price estimation!</b></p>
+            </div>
+        </div>
+        <div class="about-section" id="about-section">
+            <h3>About Us</h3>
+            <p>
+                This project is built by passionate data science and web development enthusiasts to make house price prediction accessible and easy for everyone.<br>
+                We combine modern machine learning with a beautiful, user-friendly interface.
+            </p>
+            <div class="about-social" style="margin-top:22px; display:flex; justify-content:center; gap:22px;">
+                <a href="https://www.instagram.com/?hl=en" target="_blank" title="Instagram" style="color:#fff; opacity:0.8; font-size:2em; transition:color 0.2s, opacity 0.2s;"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.linkedin.com/in/priya-rawat-1ab45829a/" target="_blank" title="LinkedIn" style="color:#fff; opacity:0.8; font-size:2em; transition:color 0.2s, opacity 0.2s;"><i class="fab fa-linkedin"></i></a>
+                <a href="https://github.com/Priya-611" target="_blank" title="GitHub" style="color:#fff; opacity:0.8; font-size:2em; transition:color 0.2s, opacity 0.2s;"><i class="fab fa-github"></i></a>
+            </div>
+        </div>
+        <div class="about-section" id="contact-section" style="margin-top:24px;">
+            <h3>Contact Us</h3>
+            <div style="font-size:1.18em; font-weight:600; color:var(--accent-light); margin-bottom:8px;">Priya Rawat</div>
+            <div style="font-size:1.05em; color:var(--accent-light); margin-bottom:10px; font-weight:500;">Developer | Expertise in ML, Data Analyst</div>
+            <div style="display:flex; flex-direction:column; align-items:center; gap:12px; margin-top:10px;">
+                <div style="display:flex; align-items:center; gap:10px; font-size:1.13em; color:var(--text-main);">
+                    <i class="fas fa-phone-alt" style="color:var(--accent-light);"></i>
+                    <span>+91 90121 26280</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px; font-size:1.13em; color:var(--text-main);">
+                    <i class="fas fa-envelope" style="color:var(--accent-light);"></i>
+                    <span><a href="mailto:priyarawat2334@gmail.com" style="color:var(--accent-light); text-decoration:underline;">priyarawat2334@gmail.com</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="footer-content">
+            <div>&copy; {{ 2025 }} House Price Predictor &mdash; Powered by Flask &amp; Machine Learning</div>
+        </div>
+    </div>
+    <script>
+        // Highlight active input
+        document.querySelectorAll('.form-group input, .form-group select').forEach(function(el) {
+            el.addEventListener('focus', function() {
+                this.parentElement.classList.add('active');
+            });
+            el.addEventListener('blur', function() {
+                this.parentElement.classList.remove('active');
+            });
+        });
+
+        // Real-time input validation
+        function validateInput(id, min, max, message) {
+            const input = document.getElementById(id);
+            const feedback = document.getElementById(id + 'Feedback');
+            input.addEventListener('input', function() {
+                if (input.value === '' || isNaN(input.value)) {
+                    feedback.textContent = message;
+                    feedback.classList.remove('valid');
+                } else if ((min !== null && Number(input.value) < min) || (max !== null && Number(input.value) > max)) {
+                    feedback.textContent = `Value must be between ${min} and ${max}`;
+                    feedback.classList.remove('valid');
+                } else {
+                    feedback.textContent = 'Looks good!';
+                    feedback.classList.add('valid');
+                }
+            });
+        }
+        validateInput('area', 100, 100000, 'Please enter a valid area (100-100000)');
+        validateInput('bedrooms', 1, 20, 'Please enter bedrooms (1-20)');
+        validateInput('bathrooms', 1, 20, 'Please enter bathrooms (1-20)');
+        validateInput('stories', 1, 10, 'Please enter stories (1-10)');
+        validateInput('parking', 0, 10, 'Please enter parking spots (0-10)');
+
+        // AJAX prediction logic
+        const form = document.getElementById('predictForm');
+        const btn = document.getElementById('predictBtn');
+        const btnText = document.getElementById('btnText');
+        const spinner = document.getElementById('spinner');
+        const resultCard = document.getElementById('resultCard');
+        const progressBar = document.getElementById('progressBar');
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            btn.disabled = true;
+            btnText.style.display = 'none';
+            spinner.style.display = 'inline-block';
+            progressBar.style.display = 'block';
+            resultCard.style.display = 'none';
+            resultCard.innerHTML = '';
+
+            // Collect form data
+            const data = {
+                area: form.area.value,
+                bedrooms: form.bedrooms.value,
+                bathrooms: form.bathrooms.value,
+                stories: form.stories.value,
+                mainroad: form.mainroad.value,
+                guestroom: form.guestroom.value,
+                basement: form.basement.value,
+                airconditioning: form.airconditioning.value,
+                parking: form.parking.value
+            };
+
+            try {
+                const response = await fetch('/api/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                btn.disabled = false;
+                btnText.style.display = '';
+                spinner.style.display = 'none';
+                progressBar.style.display = 'none';
+                let html = '<h3 style="text-align:center; color:var(--accent-light); font-size:1.4em; margin-bottom:10px;">Predicted House Price</h3>';
+                if (result.error) {
+                    html += `<div style=\"color: var(--error); font-weight: 600;\">${result.error}</div>`;
+                } else {
+                    html += `<div class=\"predicted-price\">$ ${parseFloat(result.prediction).toLocaleString('en-US', {maximumFractionDigits:2})}</div>`;
+                    // Compose feature phrases
+                    let features = [];
+                    if (data.mainroad === 'yes') features.push('near main road');
+                    if (data.guestroom === 'yes') features.push('with guest room');
+                    if (data.basement === 'yes') features.push('with basement');
+                    if (data.airconditioning === 'yes') features.push('with AC');
+                    let featuresStr = features.length ? (', ' + features.join(', ')) : '';
+                    html += `<div class=\"summary-sentence\" style=\"margin: 18px 0 0 0; color: var(--accent-light); font-size: 1.18em; font-weight: 500; line-height: 1.7;\">
+                        For a house with <b>${data.area} sq ft</b> area, <b>${data.bedrooms}</b> bedroom(s), <b>${data.bathrooms}</b> bathroom(s), <b>${data.stories}</b> stor${data.stories == 1 ? 'y' : 'ies'}${featuresStr}, and <b>${data.parking}</b> parking spot(s).</div>`;
+                }
+                html += '<hr style=\"margin: 22px 0 12px 0; border: none; border-top: 1.5px solid #232a36;\">';
+                resultCard.innerHTML = html;
+                resultCard.style.display = '';
+                setTimeout(function() {
+                    resultCard.classList.add('show');
+                    resultCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            } catch (err) {
+                btn.disabled = false;
+                btnText.style.display = '';
+                spinner.style.display = 'none';
+                progressBar.style.display = 'none';
+                resultCard.innerHTML = `<div style='color: var(--error); font-weight: 600;'>Error: ${err}</div>`;
+                resultCard.style.display = '';
+                resultCard.classList.add('show');
+            }
+        });
+    </script>
+</body>
+</html> 
